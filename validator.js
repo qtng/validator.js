@@ -809,13 +809,13 @@
     }
 
     function currencyRegex(options) {
-        var symbol = '(\\' + options.symbol.replace(/\./g, '\\.') + ')' + (options.require_symbol ? '' : '?')
-            , negative = '-?'
+        var negative = '-?'
             , whole_dollar_amount_without_sep = '[1-9]\\d*'
             , whole_dollar_amount_with_sep = '[1-9]\\d{0,2}(\\' + options.thousands_separator + '\\d{3})*'
             , valid_whole_dollar_amounts = ['0', whole_dollar_amount_without_sep, whole_dollar_amount_with_sep]
             , whole_dollar_amount = '(' + valid_whole_dollar_amounts.join('|') + ')?'
             , decimal_amount = '(\\' + options.decimal_separator + '\\d{2})?';
+        if (!options.symbol) symbol = '';
         var pattern = whole_dollar_amount + decimal_amount;
         // default is negative sign before symbol, but there are two other options (besides parens)
         if (options.allow_negatives && !options.parens_for_negatives) {
@@ -836,10 +836,13 @@
         else if (options.allow_space_after_digits) {
             pattern += '( (?!$))?';
         }
-        if (options.symbol_after_digits) {
-            pattern += symbol;
-        } else {
-            pattern = symbol + pattern;
+        if (options.symbol) {
+            var symbol = ('(\\' + options.symbol.replace(/\./g, '\\.') + ')' + (options.require_symbol ? '' : '?'));
+            if (options.symbol_after_digits) {
+                pattern += symbol;
+            } else {
+                pattern = symbol + pattern;
+            }
         }
         if (options.allow_negatives) {
             if (options.parens_for_negatives) {
